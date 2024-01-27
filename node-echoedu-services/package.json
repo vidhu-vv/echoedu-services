@@ -1,0 +1,9 @@
+{
+  "type": "commonjs",
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.4.1",
+    "eventsource": "^2.0.2",
+    "pocketbase": "^0.21.0"
+  }
+}

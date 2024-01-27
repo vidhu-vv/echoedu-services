@@ -7,7 +7,6 @@ from discord import app_commands
 from pocketbase import PocketBase
 # from pocketbase.client import FileUpload
 
-
 intents = discord.Intents.default()
 intents.message_content = True
 
@@ -20,9 +19,6 @@ import logging
 handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
 
 
-
-
-
 load_dotenv()
 
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -33,13 +29,22 @@ ADMIN_PASSWORD = os.getenv('API_ADMIN_PASSWORD')
 client = discord.Client(intents=intents)
 tree = app_commands.CommandTree(client)
 
-client = PocketBase('http://127.0.0.1:8090')
 
-admin_data = client.admins.auth_with_password(ADMIN_EMAIL, ADMIN_PASSWORD)
+pb = PocketBase('https://api.echo-edu.org')
+print(f"Admin email: {ADMIN_EMAIL}, password: {ADMIN_PASSWORD}")
+admin_data = pb.admins.auth_with_password(ADMIN_EMAIL, ADMIN_PASSWORD)
 
-result = client.collection("sessions").get_list(1, 20, {
-    "sort": '-created',
-})
+# losers get pb's in the gym
+# vidhu gets pb's in vscode
+def data_col(data):
+    print(data.record.tutee)
+    result = pb.collection('users').get_one(data.record.tutee)
+    print('weewooweewoo')
+    print(result)
+    print(result.email)
+    
+
+pb.collection('sessions').subscribe(data_col)
 
 @client.event
 async def on_ready():
@@ -60,6 +65,7 @@ async def on_ready():
     description="Ping pong",
     guild=discord.Object(id=int(GUILD))
 )
+
 async def ping(interaction):
     await interaction.response.send_message(f"Pong! - {round(client.latency * 1000)}ms")
 

@@ -1,25 +1,11 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { Client, Collection, Events, GatewayIntentBits } = require("discord.js");
+const PocketBase = require("pocketbase/cjs");
 const dotenv = require("dotenv");
 dotenv.config();
-
 const eventsource = require("eventsource");
 global.EventSource = eventsource;
-
-const PocketBase = require("pocketbase/cjs");
-const pb = new PocketBase("https://api.echo-edu.org");
-
-pb.admins.authWithPassword(
-  process.env.API_ADMIN_EMAIL,
-  process.env.API_ADMIN_PASSWORD
-);
-
-pb.collection("sessions").subscribe("*", async (e) => {
-  const result = await pb.collection("users").getOne(e.record.tutee);
-  console.log(result);
-  console.log(result.email);
-});
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 client.commands = new Collection();
@@ -35,7 +21,6 @@ for (const folder of commandFolders) {
   for (const file of commandFiles) {
     const filePath = path.join(commandsPath, file);
     const command = require(filePath);
-    // Set a new item in the Collection with the key as the command name and the value as the exported module
     if ("data" in command && "execute" in command) {
       client.commands.set(command.data.name, command);
     } else {
@@ -81,3 +66,41 @@ client.on(Events.InteractionCreate, async (interaction) => {
 });
 
 client.login(TOKEN);
+
+// discord ^
+//         |
+//
+//            |
+// pocketbase v
+
+let reminders = [];
+
+const pb = new PocketBase("https://api.echo-edu.org");
+
+pb.admins.authWithPassword(
+  process.env.API_ADMIN_EMAIL,
+  process.env.API_ADMIN_PASSWORD
+);
+
+pb.collection("sessions").subscribe("*", async ({ action, record }) => {
+  // const result = await pb.collection("users").getOne(e.record.tutee);
+  // check if a tutee was added to a session
+  if (action === "update") {
+    reminders.push({
+      sessionid: record.id,
+      location: "vidhu's basement",
+      numbers: [1234567890, 9876543211],
+      datetime: record.datetime,
+    });
+  }
+});
+
+try {
+  const data = fs.readFileSync("./backups/backup.json", "utf8");
+  reminders = JSON.parse(data);
+  console.log("loading from backup...", reminders);
+} catch {}
+
+setInterval(async () => {
+  fs.writeFileSync("./backups/backup.json", JSON.stringify(reminders), "utf8");
+}, 6000);

@@ -1,6 +1,7 @@
 {
   "type": "commonjs",
   "dependencies": {
+    "dayjs": "^1.11.10",
     "discord.js": "^14.14.1",
     "dotenv": "^16.4.1",
     "eventsource": "^2.0.2",

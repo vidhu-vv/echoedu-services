@@ -3,9 +3,12 @@ const path = require("node:path");
 const { Client, Collection, Events, GatewayIntentBits } = require("discord.js");
 const PocketBase = require("pocketbase/cjs");
 const dotenv = require("dotenv");
+const dayjs = require("dayjs");
 dotenv.config();
 const eventsource = require("eventsource");
 global.EventSource = eventsource;
+
+const { sendToNumber, carriers } = require("./notify"); // OMGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 client.commands = new Collection();
@@ -33,6 +36,7 @@ for (const folder of commandFolders) {
 
 const TOKEN = process.env.DISCORD_TOKEN;
 const GUILD_ID = process.env.DISCORD_GUILD;
+const CHANNEL_ID = process.env.DISCORD_CHANNEL_ID;
 
 client.once(Events.ClientReady, (readyClient) => {
   console.log(`Logged in as ${readyClient.user.tag}!`);
@@ -73,34 +77,59 @@ client.login(TOKEN);
 //            |
 // pocketbase v
 
-let reminders = [];
-
 const pb = new PocketBase("https://api.echo-edu.org");
 
-pb.admins.authWithPassword(
-  process.env.API_ADMIN_EMAIL,
-  process.env.API_ADMIN_PASSWORD
-);
+(async () => {
+  await pb.admins.authWithPassword(
+    process.env.API_ADMIN_EMAIL,
+    process.env.API_ADMIN_PASSWORD
+  );
 
-pb.collection("sessions").subscribe("*", async ({ action, record }) => {
-  // const result = await pb.collection("users").getOne(e.record.tutee);
-  // check if a tutee was added to a session
-  if (action === "update") {
-    reminders.push({
-      sessionid: record.id,
-      location: "vidhu's basement",
-      numbers: [1234567890, 9876543211],
-      datetime: record.datetime,
-    });
+  routine();
+
+  setInterval(routine, 5000);
+})();
+
+async function routine() {
+  const resultList = await pb.collection("notifications").getFullList({
+    filter: "datetime <= @now",
+    expand: "session,phone,session.tutee,session.tutor",
+  });
+  if (resultList.length === 0) {
+    console.log(`no notifications`);
   }
-});
+  for (const result of resultList) {
+    const { datetime, reason } = result;
 
-try {
-  const data = fs.readFileSync("./backups/backup.json", "utf8");
-  reminders = JSON.parse(data);
-  console.log("loading from backup...", reminders);
-} catch {}
+    const { session } = result.expand;
+    const { tutee, tutor } = session.expand;
 
-setInterval(async () => {
-  fs.writeFileSync("./backups/backup.json", JSON.stringify(reminders), "utf8");
-}, 6000);
+    const formattedTime = dayjs(datetime, "America/Los_Angeles").format(
+      "dddd, MMMM D"
+    );
+
+    const message = {
+      "booking/new": `You have a new booking for ${formattedTime} at TUTORIAL with ${
+        result.tutee ? tutor.name : tutee ? tutee.name : "the student"
+      }`,
+      "booking/canceled": `Your booking for ${formattedTime} has been cancelled by ${
+        result.tutee ? tutor.name : tutee ? tutee.name : "the student"
+      }`,
+      "reminder/5mins": `You have a tutoring session in 5 minutes with ${
+        result.tutee ? tutor.name : tutee ? tutee.name : "the student"
+      } Location: ${session.location}`,
+      "reminder/morning": `You have a tutoring session today at TUTORIAL with ${
+        result.tutee ? tutor.name : tutee ? tutee.name : "the student"
+      } Location: ${session.location}`,
+    };
+    const { number, carrier } = result.expand.phone;
+    const text = message[reason];
+    await sendToNumber(number, carrier, text);
+    client.channels.cache
+      .get(CHANNEL_ID)
+      .send(
+        `Sending... "${message[reason]}" to: ${number}${carriers[carrier]}`
+      );
+    await pb.collection("notifications").delete(result.id);
+  }
+}

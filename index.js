@@ -102,6 +102,11 @@ async function routine() {
     const { datetime, reason } = result;
 
     const { session } = result.expand;
+    if (!session) {
+      console.log(`session not found for ${result.id}`);
+      await pb.collection("notifications").delete(result.id);
+      continue;
+    }
     const { tutee, tutor } = session.expand;
 
     const formattedTime = dayjs(datetime, "America/Los_Angeles").format(

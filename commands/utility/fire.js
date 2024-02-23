@@ -25,24 +25,29 @@ module.exports = {
     }
 
     const firedTutor = interaction.options.getString("tutor", true);
-    console.log(firedTutor)
-
     try {
-      const record = await pb
-        .collection("tutors")
-        .getFirstListItem({ filter: `name = "${firedTutor}"` });
-      console.log(record.grade);
       const sent = await interaction.reply({
         content: "Removing tutor from database...",
         fetchReply: true,
       });
-      await pb.collection("tutors").delete(record.id);
-      interaction.editReply(`Fired ${tutor}!`);
-    } catch {
-      const sent = await interaction.reply({
-        content: "Tutor not found",
-        fetchReply: true,
+      const record = await pb
+        .collection("tutors")
+        .getFirstListItem(`name="${firedTutor}"`);
+      const firedSessions = await pb
+      .collection("sessions")
+      .getFullList({
+        expand: "tutor",
+        filter: `tutor.name="${firedTutor}"`,
       });
+      console.log(`Fired ${firedTutor}!`)
+      for (const session of firedSessions) {
+        await pb.collection("sessions").delete(session.id);
+      }
+      await pb.collection("tutors").delete(record.id);
+      interaction.editReply(`Fired ${firedTutor}!`);
+    } catch(e) {
+      console.error(e);
+      interaction.editReply('Problem firing tutor. Please try again.'); 
     }
   },
 };

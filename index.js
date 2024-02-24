@@ -36,6 +36,7 @@ for (const folder of commandFolders) {
 
 const TOKEN = process.env.DISCORD_TOKEN;
 const CHANNEL_ID = process.env.DISCORD_CHANNEL_ID;
+const DISCORD_ADMIN_ID = process.env.DISCORD_ADMIN_ID;
 
 client.once(Events.ClientReady, (readyClient) => {
   console.log(`Logged in as ${readyClient.user.tag}!`);
@@ -78,17 +79,27 @@ client.login(TOKEN);
 
 const pb = new PocketBase("https://api.echo-edu.org");
 
+
 (async () => {
   await pb.admins.authWithPassword(
     process.env.API_ADMIN_EMAIL,
     process.env.API_ADMIN_PASSWORD
-  );
-
-  routine();
-
-  setInterval(routine, 5000);
-})();
-
+    );
+    
+    await pb.collection('applications').subscribe('*', function (e) {
+      console.log(e.action);
+      console.log(e.record);
+      client.channels.cache
+      .get(CHANNEL_ID)
+      .send(
+        `For <@${DISCORD_ADMIN_ID}>\nNew application: ${e.record.expand.user.name} - ${e.record.expand.user.id}`
+      );
+    }, { expand: "user"});
+    routine();
+    
+    setInterval(routine, 5000);
+  })();
+  
 async function routine() {
   const resultList = await pb.collection("notifications").getFullList({
     filter: "datetime <= @now",

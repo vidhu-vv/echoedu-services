@@ -35,7 +35,6 @@ for (const folder of commandFolders) {
 }
 
 const TOKEN = process.env.DISCORD_TOKEN;
-const GUILD_ID = process.env.DISCORD_GUILD;
 const CHANNEL_ID = process.env.DISCORD_CHANNEL_ID;
 
 client.once(Events.ClientReady, (readyClient) => {
@@ -93,10 +92,11 @@ const pb = new PocketBase("https://api.echo-edu.org");
 async function routine() {
   const resultList = await pb.collection("notifications").getFullList({
     filter: "datetime <= @now",
-    expand: "session,phone,session.tutee,session.tutor",
+    expand: "session,phone,session.tutee,session.tutor, session.datetime",
   });
   for (const result of resultList) {
-    const { datetime, reason } = result;
+    const { reason } = result;
+
 
     const { session } = result.expand;
     if (!session) {
@@ -105,8 +105,7 @@ async function routine() {
       continue;
     }
     const { tutee, tutor } = session.expand;
-
-    const formattedTime = dayjs(datetime, "America/Los_Angeles").format(
+    const formattedTime = dayjs(session.datetime, "America/Los_Angeles").format(
       "dddd, MMMM D"
     );
 

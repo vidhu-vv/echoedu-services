@@ -13,7 +13,7 @@ module.exports = {
     .addStringOption((option) =>
       option
         .setName("tutor")
-        .setDescription("the tutor to fire")
+        .setDescription("the ID of the tutor to fire")
         .setRequired(true)
     ),
   async execute(interaction) {
@@ -32,19 +32,19 @@ module.exports = {
       });
       const record = await pb
         .collection("tutors")
-        .getFirstListItem(`name="${firedTutor}"`);
+        .getFirstListItem(`id="${firedTutor}"`);
       const firedSessions = await pb
       .collection("sessions")
       .getFullList({
         expand: "tutor",
-        filter: `tutor.name="${firedTutor}"`,
+        filter: `tutor.id="${firedTutor}"`,
       });
-      console.log(`Fired ${firedTutor}!`)
+      console.log(`Fired ${record.name}!`)
       for (const session of firedSessions) {
         await pb.collection("sessions").delete(session.id);
       }
       await pb.collection("tutors").delete(record.id);
-      interaction.editReply(`Fired ${firedTutor}!`);
+      interaction.editReply(`Fired ${record.name}!`);
     } catch(e) {
       console.error(e);
       interaction.editReply('Problem firing tutor. Please try again.'); 

@@ -9,7 +9,7 @@ const pb = new PocketBase("https://api.echo-edu.org");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('list')
-        .setDescription('lists all tutors'),
+        .setDescription('lists all tutors (and IDs) alphabetically by name'),
     async execute(interaction) {
         if (!pb.authStore.model) {
             await pb.admins.authWithPassword(
@@ -18,7 +18,9 @@ module.exports = {
             );
           }
         const sent = await interaction.reply({content: 'Awaiting database response...', fetchReply: true});
-        const tutors = await pb.collection('tutors').getFullList();
+        const tutors = await pb.collection('tutors').getFullList({
+            sort: "name"
+        });
         const tutorNames = tutors.map(tutor => tutor.name);
         interaction.editReply(`Tutors: \n${tutors.map(tutor => tutor.name + " - (" + tutor.id + ")").join(',\n')}`);
     }

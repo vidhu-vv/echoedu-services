@@ -13,10 +13,14 @@ module.exports = {
     .addStringOption((option) =>
       option
         .setName("tutor")
-        .setDescription("the ID of the tutor to fire")
+        .setDescription("the ID of the tutor to fire (e.g. 1234567890)")
         .setRequired(true)
     ),
   async execute(interaction) {
+    const sent = await interaction.reply({
+      content: "Removing tutor from database...",
+      fetchReply: true,
+    });
     if (!pb.authStore.model) {
       await pb.admins.authWithPassword(
         process.env.API_ADMIN_EMAIL,
@@ -26,10 +30,6 @@ module.exports = {
 
     const firedTutor = interaction.options.getString("tutor", true);
     try {
-      const sent = await interaction.reply({
-        content: "Removing tutor from database...",
-        fetchReply: true,
-      });
       const record = await pb
         .collection("tutors")
         .getFirstListItem(`id="${firedTutor}"`);
@@ -43,6 +43,7 @@ module.exports = {
       for (const session of firedSessions) {
         await pb.collection("sessions").delete(session.id);
       }
+
       await pb.collection("tutors").delete(record.id);
       interaction.editReply(`Fired ${record.name}!`);
     } catch(e) {

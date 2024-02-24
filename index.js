@@ -95,9 +95,6 @@ async function routine() {
     filter: "datetime <= @now",
     expand: "session,phone,session.tutee,session.tutor",
   });
-  if (resultList.length === 0) {
-    console.log(`no notifications`);
-  }
   for (const result of resultList) {
     const { datetime, reason } = result;
 

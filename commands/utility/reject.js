@@ -32,7 +32,7 @@ module.exports = {
                 await pb.collection('applications').delete(record.id);
             }
             const user = await pb.collection('users').getFirstListItem(`id="${id}"`);
-            interaction.editReply(`Rejected ${records.length} applications from ${user.name} - (${user.id})!`);
+            interaction.editReply(`Rejected ${records.length} application${records.length === 1 ? "" : "s"} from ${user.name} - (${user.id})!`);
           } catch (e) {
             console.error(e);
             interaction.editReply("Problem rejecting application. Please try again.");

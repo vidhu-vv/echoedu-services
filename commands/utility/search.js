@@ -8,8 +8,9 @@ const pb = new PocketBase("https://api.echo-edu.org");
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('list')
-        .setDescription('lists all tutors'),
+        .setName('search')
+        .setDescription('searches for a tutor by name (not case sensitive) and returns tutors with similar names')
+        .addStringOption(option => option.setName('tutor').setDescription('the name to find in the db').setRequired(true)),
     async execute(interaction) {
         if (!pb.authStore.model) {
             await pb.admins.authWithPassword(
@@ -17,9 +18,12 @@ module.exports = {
               process.env.API_ADMIN_PASSWORD
             );
           }
+        const tutor = interaction.options.getString('tutor');
         const sent = await interaction.reply({content: 'Awaiting database response...', fetchReply: true});
-        const tutors = await pb.collection('tutors').getFullList();
-        const tutorNames = tutors.map(tutor => tutor.name);
-        interaction.editReply(`Tutors: \n${tutors.map(tutor => tutor.name + " - (" + tutor.id + ")").join(',\n')}`);
+        const tutors = await pb.collection('tutors').getFullList({
+            filter: `name?~"%${tutor}%"`,
+            sort: "name"
+        });
+        interaction.editReply(`Tutors like "${tutor}": \n${tutors.map(tutor => tutor.name + " - (" + tutor.id + ")").join(',\n')}`);
     }
 };

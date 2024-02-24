@@ -87,13 +87,13 @@ const pb = new PocketBase("https://api.echo-edu.org");
     );
     
     await pb.collection('applications').subscribe('*', function (e) {
-      console.log(e.action);
-      console.log(e.record);
-      client.channels.cache
-      .get(CHANNEL_ID)
-      .send(
-        `For <@${DISCORD_ADMIN_ID}>\nNew application: ${e.record.expand.user.name} - ${e.record.expand.user.id}`
-      );
+      if(e.action === "create"){
+        client.channels.cache
+        .get(CHANNEL_ID)
+        .send(
+          `For <@${DISCORD_ADMIN_ID}>\nNew application: ${e.record.expand.user.name} - ${e.record.expand.user.id}`
+        );
+      }  
     }, { expand: "user"});
     routine();
     

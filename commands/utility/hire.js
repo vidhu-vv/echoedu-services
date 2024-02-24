@@ -16,12 +16,6 @@ module.exports = {
         .setDescription("the name of the tutor to hire (e.g. Alexander Bonev)")
         .setRequired(true)
     )
-    .addIntegerOption((option) =>
-      option
-        .setName("grade")
-        .setDescription("the grade of the tutor to hire (e.g. 11)")
-        .setRequired(true)
-    )
     .addBooleanOption((option) =>
       option
         .setName("isnhs")
@@ -36,7 +30,6 @@ module.exports = {
       );
     }
     const name = interaction.options.getString("name", true);
-    const grade = interaction.options.getInteger("grade", true);
     const isnhs = interaction.options.getBoolean("isnhs", true);
 
     const user = await pb
@@ -49,7 +42,6 @@ module.exports = {
     data = {
         "user": user.id,
         "name": name,
-        "grade": grade,
         "isnhs": isnhs,
     }
     try {

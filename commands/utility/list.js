@@ -9,7 +9,13 @@ const pb = new PocketBase("https://api.echo-edu.org");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('list')
-        .setDescription('lists all tutors (and IDs) alphabetically by name'),
+        .setDescription('lists all tutors or users alphabetically by name')
+        .addBooleanOption((option) =>
+          option
+            .setName("tutors")
+            .setDescription("True: list tutors, False: list users")
+            .setRequired(true)
+        ),
     async execute(interaction) {
         if (!pb.authStore.model) {
             await pb.admins.authWithPassword(
@@ -17,11 +23,22 @@ module.exports = {
               process.env.API_ADMIN_PASSWORD
             );
           }
+        const isTutors = interaction.options.getBoolean("tutors", true);
         const sent = await interaction.reply({content: 'Awaiting database response...', fetchReply: true});
         const tutors = await pb.collection('tutors').getFullList({
             sort: "name"
         });
-        const tutorNames = tutors.map(tutor => tutor.name);
-        interaction.editReply(`Tutors: \n${tutors.map(tutor => tutor.name + " - (" + tutor.id + ")").join(',\n')}`);
+        const users = await pb.collection('users').getFullList({
+            sort: "name"
+        });
+        const tutorNames = tutors.map(tutor => tutor.name + " - (" + tutor.id + ")").join(',\n')
+        if(!isTutors) {
+            interaction.editReply(`Users: \n${users.map(user => user.name).join(',\n')}`);
+            return;
+        }
+        else {
+          interaction.editReply(`Tutors: \n${tutorNames}`);
+          return;
+        }
     }
 };

@@ -12,15 +12,9 @@ module.exports = {
     .setDescription("hires a tutor")
     .addStringOption((option) =>
       option
-        .setName("name")
-        .setDescription("the name of the tutor to hire (e.g. Alexander Bonev)")
+        .setName("userid")
+        .setDescription("the id of the tutor to hire (e.g. x8vs2d1w9khpu3u)")
         .setRequired(true)
-    )
-    .addBooleanOption((option) =>
-      option
-        .setName("isnhs")
-        .setDescription("Is the tutor in NHS (true/false)")
-        .setRequired(false)
     ),
   async execute(interaction) {
     if (!pb.authStore.model) {
@@ -29,20 +23,18 @@ module.exports = {
         process.env.API_ADMIN_PASSWORD
       );
     }
-    const name = interaction.options.getString("name", true);
-    const isnhs = interaction.options.getBoolean("isnhs", true);
+    const id = interaction.options.getString("userid", true);
 
     const user = await pb
         .collection("users")
-        .getFirstListItem(`name="${name}"`);
+        .getFirstListItem(`id="${id}"`);
     if (!user) {
         await interaction.reply("User not found. Please try again.");
         return;
     }
     data = {
         "user": user.id,
-        "name": name,
-        "isnhs": isnhs,
+        "name": user.name,
     }
     try {
       const sent = await interaction.reply({
@@ -50,6 +42,10 @@ module.exports = {
         fetchReply: true,
       });
       const record = await pb.collection("tutors").create(data);
+      const applications = await pb.collection("applications").getFullList(`user="${user.id}"`);
+      for (const application of applications) {
+        await pb.collection("applications").delete(application.id);
+      }
       interaction.editReply(`Hired ${record.name}!`);
     } catch (e) {
       console.error(e);

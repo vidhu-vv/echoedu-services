@@ -18,12 +18,22 @@ module.exports = {
               process.env.API_ADMIN_PASSWORD
             );
           }
+
         const tutor = interaction.options.getString('tutor');
         const sent = await interaction.reply({content: 'Awaiting database response...', fetchReply: true});
-        const tutors = await pb.collection('tutors').getFullList({
-            filter: `name~"%${tutor}%"`,
-            sort: "name"
-        });
-        interaction.editReply(`Tutors like "${tutor}": \n${tutors.map(tutor => tutor.name + " - (" + tutor.id + ")").join(',\n')}`);
+        try {
+            const tutors = await pb.collection('tutors').getFullList({
+                filter: `name~"%${tutor}%"`,
+                sort: "name",
+            });
+            if (tutors.length === 0) {
+                interaction.editReply("No tutors found.");
+                return;
+            }
+            interaction.editReply(`Tutors like "${tutor}": \n${tutors.map(tutor => tutor.name + " - (" + tutor.id + ")").join(',\n')}`);
+        } catch (e) {
+            console.error(e);
+            interaction.editReply("Problem finding tutor. Please try again.");
+        }
     }
 };

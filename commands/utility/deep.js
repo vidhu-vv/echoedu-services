@@ -36,7 +36,7 @@ module.exports = {
             classString += await printClass(c) + ", ";
         }
         const sessions = await pb.collection('sessions').getFullList(`tutor="${tutorid}"`);
-        interaction.editReply(`Tutor: ${tutor.name} - (${tutor.id})\nSessions: ${sessions.length}\nIs NHS: ${tutor.nhs ? "Yes" : "No"}\nClasses: ${classString}`);
+        interaction.editReply(`Tutor: ${tutor.name} - (${tutor.id})\nSessions: ${sessions.length}\nIs NHS: ${tutor.isNHS ? "Yes" : "No"}\nClasses: ${classString}`);
         } catch (e) {
             console.error(e);
             interaction.editReply("Problem finding tutor. Please try again.");

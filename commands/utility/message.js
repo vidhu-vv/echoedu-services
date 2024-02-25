@@ -14,6 +14,10 @@ module.exports = {
         const carrier = interaction.options.getString('carrier');
         const text = interaction.options.getString('text');
         const sent = await interaction.reply({content: 'Sending...', fetchReply: true});
+        if(carriers[carrier] === undefined) {
+            interaction.editReply('Invalid carrier');
+            return;
+        }
         await sendToNumber(number, carrier, text);
         interaction.editReply(`Message sent to ${number}${carriers[carrier]}`);
     }

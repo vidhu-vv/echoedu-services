@@ -35,7 +35,7 @@ module.exports = {
         for (const c of tutor.classes) {
             classString += await printClass(c) + ", ";
         }
-        const sessions = await pb.collection('sessions').getFullList(`tutor="${tutorid}"`);
+        const sessions = await pb.collection('sessions').getFullList({ filter: `tutor="${tutorid}"` });
         interaction.editReply(`Tutor: ${tutor.name} - (${tutor.id})\nSessions: ${sessions.length}\nIs NHS: ${tutor.isNHS ? "Yes" : "No"}\nClasses: ${classString}`);
         } catch (e) {
             console.error(e);

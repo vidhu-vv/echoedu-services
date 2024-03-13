@@ -53,7 +53,7 @@ async function sendInBatches(interaction, array) {
     for (let k = 0; k < BATCH_SIZE; k++) {
       const item = array[i * BATCH_SIZE + k];
       if (item) {
-        sendString += `${item.name} \`${item.id}\`\n`;
+        sendString += `\`${item.id}\` | ${item.name}\n`;
       }
     }
     await interaction.channel?.send(sendString);

@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const PocketBase = require("pocketbase/cjs");
 const dotenv = require("dotenv");
-
+// searching functionality
 dotenv.config();
 
 const pb = new PocketBase("https://api.echo-edu.org");

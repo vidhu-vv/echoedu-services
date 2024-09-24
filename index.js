@@ -8,7 +8,7 @@ dotenv.config();
 const eventsource = require('eventsource');
 global.EventSource = eventsource;
 
-const { sendToNumber, carriers } = require('./notify'); // OMGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
+const { sendToNumber, carriers } = require('./notify'); 
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 client.commands = new Collection();

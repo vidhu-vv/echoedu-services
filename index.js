@@ -1,14 +1,11 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
-const PocketBase = require('pocketbase/cjs');
 const dotenv = require('dotenv');
 const dayjs = require('dayjs');
 dotenv.config();
-const eventsource = require('eventsource');
-global.EventSource = eventsource;
 
-const { sendToNumber, carriers } = require('./notify'); 
+const { sendToNumber, carriers } = require('./notify');
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 client.commands = new Collection();
@@ -77,7 +74,7 @@ client.login(TOKEN);
 //            |
 // pocketbase v
 
-const pb = new PocketBase('https://api.echo-edu.org');
+const pb = require('./utils/pocketbase');
 
 (async () => {
   await pb.admins.authWithPassword(

@@ -1,10 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const PocketBase = require('pocketbase/cjs');
-const dotenv = require('dotenv');
-
-dotenv.config();
-
-const pb = new PocketBase('https://api.echo-edu.org');
+const pb = require('../../utils/pocketbase.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -17,13 +12,6 @@ module.exports = {
         .setRequired(true)
     ),
   async execute(interaction) {
-    if (!pb.authStore.model) {
-      await pb.admins.authWithPassword(
-        process.env.API_ADMIN_EMAIL,
-        process.env.API_ADMIN_PASSWORD
-      );
-    }
-
     const isTutors = interaction.options.getBoolean('tutors', true);
     await interaction.deferReply();
 

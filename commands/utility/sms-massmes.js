@@ -5,7 +5,7 @@ const { sendToNumber, carriers } = require('../../notify');
 const pb = new PocketBase("https://api.echo-edu.org");
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('massmes')
+        .setName('sms-massmes')
         .setDescription('Sends a message to tutors of a certain class based on the class id')
         .addStringOption(option => option.setName('classid').setDescription('The ID of the class to send the message to').setRequired(true))
         .addStringOption(option => option.setName('text').setDescription('The text to send to the phone number').setRequired(true)),

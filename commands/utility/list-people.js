@@ -8,7 +8,7 @@ const pb = new PocketBase('https://api.echo-edu.org');
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('list')
+    .setName('list-people')
     .setDescription('lists all tutors or users alphabetically by name')
     .addBooleanOption((option) =>
       option

@@ -8,7 +8,7 @@ const pb = new PocketBase("https://api.echo-edu.org");
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('classes')
+        .setName('list-classes')
         .setDescription('lists all classes alphabetically by name along with id'),
     async execute(interaction) {
         if (!pb.authStore.model) {

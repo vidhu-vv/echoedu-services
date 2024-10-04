@@ -8,7 +8,7 @@ const pb = new PocketBase("https://api.echo-edu.org");
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('search')
+        .setName('tutor-search')
         .setDescription('searches for a tutor by name (not case sensitive) and returns tutors with similar names')
         .addStringOption(option => option.setName('tutor').setDescription('the name to find in the db').setRequired(true)),
     async execute(interaction) {

@@ -8,7 +8,7 @@ const pb = new PocketBase("https://api.echo-edu.org");
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('deep')
+        .setName('tutor-deep')
         .setDescription('gives a deep dive into a tutor based on their tutor id')
         .addStringOption(option => option.setName('tutorid').setDescription('the id to find in the db').setRequired(true)),
     async execute(interaction) {

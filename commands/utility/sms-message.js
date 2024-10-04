@@ -4,7 +4,7 @@ const { sendToNumber, carriers } = require('../../notify');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('message')
+        .setName('sms-message')
         .setDescription('Sends a message to a phone number')
         .addStringOption(option => option.setName('number').setDescription('The phone number to send the message to').setRequired(true))
         .addStringOption(option => option.setName('carrier').setDescription('The carrier of the phone number').setRequired(true))

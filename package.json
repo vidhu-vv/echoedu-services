@@ -1,5 +1,9 @@
 {
   "type": "commonjs",
+  "scripts": {
+    "start": "node index.js",
+    "cmds": "node deploy-commands.js"
+  },
   "dependencies": {
     "dayjs": "^1.11.10",
     "discord.js": "^14.14.1",

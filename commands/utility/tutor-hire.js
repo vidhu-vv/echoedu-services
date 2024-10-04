@@ -8,7 +8,7 @@ const pb = new PocketBase("https://api.echo-edu.org");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("hire")
+    .setName("tutor-hire")
     .setDescription("hires a tutor")
     .addStringOption((option) =>
       option

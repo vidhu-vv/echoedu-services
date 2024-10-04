@@ -12,6 +12,7 @@ function authenticate() {
   );
 }
 
+// 86 million milliseconds in a day
 setInterval(authenticate, 86_400_000);
 
 module.exports = {

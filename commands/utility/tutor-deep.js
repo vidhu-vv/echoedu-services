@@ -36,7 +36,15 @@ module.exports = {
             classString += await printClass(c) + ", ";
         }
         const sessions = await pb.collection('sessions').getFullList({ filter: `tutor="${tutorid}"` });
-        interaction.editReply(`Tutor: ${tutor.name} - (${tutor.id})\nSessions: ${sessions.length}\nIs NHS: ${tutor.isNHS ? "Yes" : "No"}\nClasses: ${classString}`);
+        const pastMonthSessions = sessions.filter(s =>((s.datetime > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()) && (s.datetime < new Date(Date.now()).toISOString()) && (s.tutee !== "") && (s.tutee !== s.tutor)));
+        const upcomingSessions = sessions.filter(s => ((s.datetime > new Date(Date.now()).toISOString())&& (s.tutee !== "") && (s.tutee !== tutor.user)));
+
+        const dateHired = new Date(tutor.created);
+        function convertTZ(date, tzString) {
+            return new Date((typeof date === "string" ? new Date(date) : date).toLocaleString("en-US", {timeZone: tzString}));   
+        }
+        
+        interaction.editReply(`Tutor: ${tutor.name} - (${tutor.id})\nCompleted Sessions: ${pastMonthSessions.length} sessions\nUpcoming Sessions (with student): ${upcomingSessions.length} sessions\nIs NHS: ${tutor.isNHS ? "Yes" : "No"}\nClasses: ${classString}\nDate Hired: ${convertTZ(dateHired, "America/Los_Angeles").toDateString()}`);
         } catch (e) {
             console.error(e);
             interaction.editReply("Problem finding tutor. Please try again.");

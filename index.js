@@ -5,7 +5,7 @@ const dotenv = require('dotenv');
 const dayjs = require('dayjs');
 dotenv.config();
 
-const { sendToNumber, carriers } = require('./notify');
+const { sendToNumber, carriers } = require('./utils/notify');
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 client.commands = new Collection();
@@ -74,7 +74,7 @@ client.login(TOKEN);
 //            |
 // pocketbase v
 
-const pb = require('./utils/pocketbase');
+const pb = require('./utils/pocketbase.js');
 
 (async () => {
   await pb.admins.authWithPassword(

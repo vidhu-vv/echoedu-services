@@ -27,7 +27,6 @@ module.exports = {
   carriers,
   async sendToNumber(number, carrier, text) {
     // resend logic
-    console.log(`${number}${carriers[carrier]}`)
     const { data, error } = await resend.emails.send({
       from: "reminders@echo-edu.org",
       to: `${number}${carriers[carrier]}`,
@@ -38,7 +37,5 @@ module.exports = {
     if (error) {
       return console.error({ error });
     }
-
-    console.log({ data });
   },
 };

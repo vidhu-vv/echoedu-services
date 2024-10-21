@@ -116,7 +116,7 @@ async function routine() {
       'booking/canceled': `Your booking for ${formattedTime} has been cancelled by ${
         result.tutee ? tutor.name : tutee ? tutee.name : 'the student'
       }`,
-      'reminder/5mins': `You have a tutoring session in 5 min with ${
+      'reminder/5mins': `You have a tutoring session soon ${timeslot} with ${
         result.tutee ? tutor.name : tutee ? tutee.name : 'the student'
       } @ location: ${session.location}`,
       'reminder/morning': `You have a tutoring session today ${timeslot} with ${

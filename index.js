@@ -82,21 +82,7 @@ const pb = require('./utils/pocketbase.js');
     process.env.API_ADMIN_PASSWORD
   );
 
-  await pb.collection('applications').subscribe(
-    '*',
-    function (e) {
-      if (e.action === 'create') {
-        client.channels.cache
-          .get(CHANNEL_ID)
-          .send(
-            `For <@${DISCORD_ADMIN_ID}>\nNew application: ${e.record.expand.user.name} - ${e.record.expand.user.id}`
-          );
-      }
-    },
-    { expand: 'user' }
-  );
   routine();
-
   setInterval(routine, 5000);
 })();
 
@@ -121,7 +107,7 @@ async function routine() {
 
     const hour = dayjs(session.datetime).hour();
     const timeslot =
-      hour <= 11 ? 'at TUTORIAL' : hour <= 15 ? 'DURING 7th' : 'AFTER 7th';
+      hour <= 11 ? 'at TUTORIAL' : hour <= 14 ? 'DURING 7th' : 'AFTER 7th';
 
     const message = {
       'booking/new': `You have a new booking for ${formattedTime} ${timeslot} with ${
@@ -130,12 +116,12 @@ async function routine() {
       'booking/canceled': `Your booking for ${formattedTime} has been cancelled by ${
         result.tutee ? tutor.name : tutee ? tutee.name : 'the student'
       }`,
-      'reminder/5mins': `You have a tutoring session in 5 minutes with ${
+      'reminder/5mins': `You have a tutoring session in 5 min with ${
         result.tutee ? tutor.name : tutee ? tutee.name : 'the student'
-      } Location: ${session.location}`,
+      } @ location: ${session.location}`,
       'reminder/morning': `You have a tutoring session today ${timeslot} with ${
         result.tutee ? tutor.name : tutee ? tutee.name : 'the student'
-      } Location: ${session.location}`,
+      } @ location: ${session.location}`,
     };
     const { number, carrier } = result.expand.phone;
     const text = message[reason];
@@ -143,7 +129,7 @@ async function routine() {
     client.channels.cache
       .get(CHANNEL_ID)
       .send(
-        `Sending... "${message[reason]}" to: ${number}${carriers[carrier]}`
+        `> Sending > ***${message[reason]}*** > \`${number}${carriers[carrier]}\``
       );
     await pb.collection('notifications').delete(result.id);
   }

@@ -114,7 +114,7 @@ async function routine() {
     const message = {
       'booking/new': `You have a new booking for ${formattedTime} ${timeslot} with ${
         result.tutee ? tutor.name : tutee ? tutee.name : 'the student'
-      }`,
+      } @ location: ${session.location}`,
       'booking/canceled': `Your booking for ${formattedTime} has been cancelled by ${
         result.tutee ? tutor.name : tutee ? tutee.name : 'the student'
       }`,
@@ -131,7 +131,7 @@ async function routine() {
     client.channels.cache
       .get(CHANNEL_ID)
       .send(
-        `> Sending > ***${message[reason]}*** > \`${number}${carriers[carrier]}\``
+        `Sending... -> **${message[reason]}** -> ${number}${carriers[carrier]}`
       );
     await pb.collection('notifications').delete(result.id);
   }

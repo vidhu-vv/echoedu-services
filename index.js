@@ -68,11 +68,13 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
 client.login(TOKEN);
 
-// discord ^
+// discord setup ^
 //         |
 //
+//
+//
 //            |
-// pocketbase v
+// pocketbase utils
 
 const pb = require('./utils/pocketbase.js');
 

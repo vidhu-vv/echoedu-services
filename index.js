@@ -114,16 +114,16 @@ async function routine() {
     const message = {
       'booking/new': `You have a new booking for ${formattedTime} ${timeslot} with ${
         result.tutee ? tutor.name : tutee ? tutee.name : 'the student'
-      } @ location: ${session.location}`,
+      } location: ${session.location}`,
       'booking/canceled': `Your booking for ${formattedTime} has been cancelled by ${
         result.tutee ? tutor.name : tutee ? tutee.name : 'the student'
       }`,
       'reminder/5mins': `You have a tutoring session soon ${timeslot} with ${
         result.tutee ? tutor.name : tutee ? tutee.name : 'the student'
-      } @ location: ${session.location}`,
+      } location: ${session.location}`,
       'reminder/morning': `You have a tutoring session today ${timeslot} with ${
         result.tutee ? tutor.name : tutee ? tutee.name : 'the student'
-      } @ location: ${session.location}`,
+      } location: ${session.location}`,
     };
     const { number, carrier } = result.expand.phone;
     const text = message[reason];
@@ -131,7 +131,7 @@ async function routine() {
     client.channels.cache
       .get(CHANNEL_ID)
       .send(
-        `Sending... -> **${message[reason]}** -> ${number}${carriers[carrier]}`
+        `Sending... "${message[reason]}" to: ${number}${carriers[carrier]}`
       );
     await pb.collection('notifications').delete(result.id);
   }
